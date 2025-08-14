@@ -1,0 +1,12 @@
+debug: true
+app_port: 8080
+
+database:
+  host: db.prod.svc.cluster.local
+  port: 5432
+  user: prod_user
+
+# feature flags
+features:
+  - dark_mode
+  - beta_testing
