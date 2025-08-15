@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -44,12 +45,12 @@ func (m *mapManager) LoadFile(filename string) error {
 		if os.IsNotExist(err) {
 			return nil
 		}
-		return fmt.Errorf("failed to read config file %s: %w", filename, err)
+		return fmt.Errorf("%w: failed to read config file %s: %w", ErrInitFailed, filename, err)
 	}
 
 	var parsedData map[string]interface{}
 	if err := yaml.Unmarshal(content, &parsedData); err != nil {
-		return fmt.Errorf("failed to parse yaml: %w", err)
+		return fmt.Errorf("%w: failed to parse yaml: %w", ErrInitFailed, err)
 	}
 
 	// The YAML library can create map[any]any, which we need to convert.
@@ -124,12 +125,451 @@ func (m *mapManager) GetInt(key string) int {
 	switch v := val.(type) {
 	case int:
 		return v
+	case int8:
+		return int(v)
+	case int16:
+		return int(v)
+	case int32:
+		return int(v)
 	case int64: // YAML can unmarshal to int64
+		return int(v)
+	case uint:
+		return int(v)
+	case uint8:
+		return int(v)
+	case uint16:
+		return int(v)
+	case uint32:
+		return int(v)
+	case uint64:
 		return int(v)
 	case float64:
 		return int(v)
 	case string:
 		if i, err := strconv.Atoi(v); err == nil {
+			return i
+		}
+	}
+	return 0
+}
+
+// GetInt8 returns the value associated with the key as an int8.
+func (m *mapManager) GetInt8(key string) int8 {
+	val := m.Get(key)
+	if val == nil {
+		return 0
+	}
+	switch v := val.(type) {
+	case int8:
+		return v
+	case int:
+		return int8(v)
+	case int16:
+		return int8(v)
+	case int32:
+		return int8(v)
+	case int64:
+		return int8(v)
+	case uint:
+		return int8(v)
+	case uint8:
+		return int8(v)
+	case uint16:
+		return int8(v)
+	case uint32:
+		return int8(v)
+	case uint64:
+		return int8(v)
+	case float64:
+		return int8(v)
+	case string:
+		if i, err := strconv.ParseInt(v, 10, 8); err == nil {
+			return int8(i)
+		}
+	}
+	return 0
+}
+
+// GetInt16 returns the value associated with the key as an int16.
+func (m *mapManager) GetInt16(key string) int16 {
+	val := m.Get(key)
+	if val == nil {
+		return 0
+	}
+	switch v := val.(type) {
+	case int16:
+		return v
+	case int:
+		return int16(v)
+	case int8:
+		return int16(v)
+	case int32:
+		return int16(v)
+	case int64:
+		return int16(v)
+	case uint:
+		return int16(v)
+	case uint8:
+		return int16(v)
+	case uint16:
+		return int16(v)
+	case uint32:
+		return int16(v)
+	case uint64:
+		return int16(v)
+	case float64:
+		return int16(v)
+	case string:
+		if i, err := strconv.ParseInt(v, 10, 16); err == nil {
+			return int16(i)
+		}
+	}
+	return 0
+}
+
+// GetInt32 returns the value associated with the key as an int32.
+func (m *mapManager) GetInt32(key string) int32 {
+	val := m.Get(key)
+	if val == nil {
+		return 0
+	}
+	switch v := val.(type) {
+	case int32:
+		return v
+	case int:
+		return int32(v)
+	case int8:
+		return int32(v)
+	case int16:
+		return int32(v)
+	case int64:
+		return int32(v)
+	case uint:
+		return int32(v)
+	case uint8:
+		return int32(v)
+	case uint16:
+		return int32(v)
+	case uint32:
+		return int32(v)
+	case uint64:
+		return int32(v)
+	case float64:
+		return int32(v)
+	case string:
+		if i, err := strconv.ParseInt(v, 10, 32); err == nil {
+			return int32(i)
+		}
+	}
+	return 0
+}
+
+// GetInt64 returns the value associated with the key as an int64.
+func (m *mapManager) GetInt64(key string) int64 {
+	val := m.Get(key)
+	if val == nil {
+		return 0
+	}
+	switch v := val.(type) {
+	case int64:
+		return v
+	case int:
+		return int64(v)
+	case int8:
+		return int64(v)
+	case int16:
+		return int64(v)
+	case int32:
+		return int64(v)
+	case uint:
+		return int64(v)
+	case uint8:
+		return int64(v)
+	case uint16:
+		return int64(v)
+	case uint32:
+		return int64(v)
+	case uint64:
+		return int64(v)
+	case float64:
+		return int64(v)
+	case string:
+		if i, err := strconv.ParseInt(v, 10, 64); err == nil {
+			return i
+		}
+	}
+	return 0
+}
+
+// GetUint returns the value associated with the key as a uint.
+func (m *mapManager) GetUint(key string) uint {
+	val := m.Get(key)
+	if val == nil {
+		return 0
+	}
+	switch v := val.(type) {
+	case uint:
+		return v
+	case uint8:
+		return uint(v)
+	case uint16:
+		return uint(v)
+	case uint32:
+		return uint(v)
+	case uint64:
+		return uint(v)
+	case int:
+		if v < 0 {
+			return 0
+		}
+		return uint(v)
+	case int8:
+		if v < 0 {
+			return 0
+		}
+		return uint(v)
+	case int16:
+		if v < 0 {
+			return 0
+		}
+		return uint(v)
+	case int32:
+		if v < 0 {
+			return 0
+		}
+		return uint(v)
+	case int64:
+		if v < 0 {
+			return 0
+		}
+		return uint(v)
+	case float64:
+		if v < 0 {
+			return 0
+		}
+		return uint(v)
+	case string:
+		if i, err := strconv.ParseUint(v, 10, 0); err == nil {
+			return uint(i)
+		}
+	}
+	return 0
+}
+
+// GetUint8 returns the value associated with the key as a uint8.
+func (m *mapManager) GetUint8(key string) uint8 {
+	val := m.Get(key)
+	if val == nil {
+		return 0
+	}
+	switch v := val.(type) {
+	case uint8:
+		return v
+	case uint:
+		return uint8(v)
+	case uint16:
+		return uint8(v)
+	case uint32:
+		return uint8(v)
+	case uint64:
+		return uint8(v)
+	case int:
+		if v < 0 {
+			return 0
+		}
+		return uint8(v)
+	case int8:
+		if v < 0 {
+			return 0
+		}
+		return uint8(v)
+	case int16:
+		if v < 0 {
+			return 0
+		}
+		return uint8(v)
+	case int32:
+		if v < 0 {
+			return 0
+		}
+		return uint8(v)
+	case int64:
+		if v < 0 {
+			return 0
+		}
+		return uint8(v)
+	case float64:
+		if v < 0 {
+			return 0
+		}
+		return uint8(v)
+	case string:
+		if i, err := strconv.ParseUint(v, 10, 8); err == nil {
+			return uint8(i)
+		}
+	}
+	return 0
+}
+
+// GetUint16 returns the value associated with the key as a uint16.
+func (m *mapManager) GetUint16(key string) uint16 {
+	val := m.Get(key)
+	if val == nil {
+		return 0
+	}
+	switch v := val.(type) {
+	case uint16:
+		return v
+	case uint:
+		return uint16(v)
+	case uint8:
+		return uint16(v)
+	case uint32:
+		return uint16(v)
+	case uint64:
+		return uint16(v)
+	case int:
+		if v < 0 {
+			return 0
+		}
+		return uint16(v)
+	case int8:
+		if v < 0 {
+			return 0
+		}
+		return uint16(v)
+	case int16:
+		if v < 0 {
+			return 0
+		}
+		return uint16(v)
+	case int32:
+		if v < 0 {
+			return 0
+		}
+		return uint16(v)
+	case int64:
+		if v < 0 {
+			return 0
+		}
+		return uint16(v)
+	case float64:
+		if v < 0 {
+			return 0
+		}
+		return uint16(v)
+	case string:
+		if i, err := strconv.ParseUint(v, 10, 16); err == nil {
+			return uint16(i)
+		}
+	}
+	return 0
+}
+
+// GetUint32 returns the value associated with the key as a uint32.
+func (m *mapManager) GetUint32(key string) uint32 {
+	val := m.Get(key)
+	if val == nil {
+		return 0
+	}
+	switch v := val.(type) {
+	case uint32:
+		return v
+	case uint:
+		return uint32(v)
+	case uint8:
+		return uint32(v)
+	case uint16:
+		return uint32(v)
+	case uint64:
+		return uint32(v)
+	case int:
+		if v < 0 {
+			return 0
+		}
+		return uint32(v)
+	case int8:
+		if v < 0 {
+			return 0
+		}
+		return uint32(v)
+	case int16:
+		if v < 0 {
+			return 0
+		}
+		return uint32(v)
+	case int32:
+		if v < 0 {
+			return 0
+		}
+		return uint32(v)
+	case int64:
+		if v < 0 {
+			return 0
+		}
+		return uint32(v)
+	case float64:
+		if v < 0 {
+			return 0
+		}
+		return uint32(v)
+	case string:
+		if i, err := strconv.ParseUint(v, 10, 32); err == nil {
+			return uint32(i)
+		}
+	}
+	return 0
+}
+
+// GetUint64 returns the value associated with the key as a uint64.
+func (m *mapManager) GetUint64(key string) uint64 {
+	val := m.Get(key)
+	if val == nil {
+		return 0
+	}
+	switch v := val.(type) {
+	case uint64:
+		return v
+	case uint:
+		return uint64(v)
+	case uint8:
+		return uint64(v)
+	case uint16:
+		return uint64(v)
+	case uint32:
+		return uint64(v)
+	case int:
+		if v < 0 {
+			return 0
+		}
+		return uint64(v)
+	case int8:
+		if v < 0 {
+			return 0
+		}
+		return uint64(v)
+	case int16:
+		if v < 0 {
+			return 0
+		}
+		return uint64(v)
+	case int32:
+		if v < 0 {
+			return 0
+		}
+		return uint64(v)
+	case int64:
+		if v < 0 {
+			return 0
+		}
+		return uint64(v)
+	case float64:
+		if v < 0 {
+			return 0
+		}
+		return uint64(v)
+	case string:
+		if i, err := strconv.ParseUint(v, 10, 64); err == nil {
 			return i
 		}
 	}
@@ -172,6 +612,49 @@ func (m *mapManager) GetFloat64(key string) float64 {
 		}
 	}
 	return 0.0
+}
+
+// GetDuration returns the value associated with the key as a time.Duration.
+// It can parse duration strings (e.g., "10s", "5m").
+// If the value is a number, it's treated as nanoseconds.
+func (m *mapManager) GetDuration(key string) time.Duration {
+	val := m.Get(key)
+	if val == nil {
+		return 0
+	}
+	switch v := val.(type) {
+	case time.Duration:
+		return v
+	case string:
+		if d, err := time.ParseDuration(v); err == nil {
+			return d
+		}
+	case int:
+		return time.Duration(v)
+	case int64:
+		return time.Duration(v)
+	case float64:
+		return time.Duration(v)
+	}
+	return 0
+}
+
+// GetStringMapString returns the value associated with the key as a map of strings.
+// If the value is not a map, it returns an empty map. All values in the map
+// are converted to strings.
+func (m *mapManager) GetStringMapString(key string) map[string]string {
+	val := m.Get(key)
+	if val == nil {
+		return make(map[string]string)
+	}
+
+	result := make(map[string]string)
+	if v, ok := val.(map[string]interface{}); ok {
+		for k, item := range v {
+			result[k] = fmt.Sprintf("%v", item)
+		}
+	}
+	return result
 }
 
 // GetStringSlice returns the value associated with the key as a slice of strings.
