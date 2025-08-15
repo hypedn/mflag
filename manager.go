@@ -716,21 +716,6 @@ func collectKeys(prefix string, data map[string]interface{}, keys *[]string) {
 	}
 }
 
-// Debug prints all configuration values to standard output.
-func (m *mapManager) Debug() {
-	fmt.Println("--- mflag configuration ---")
-	keys := m.AllKeys()
-	if len(keys) == 0 {
-		fmt.Println("  (empty)")
-		return
-	}
-	for _, key := range keys {
-		value := m.Get(key)
-		fmt.Printf("  %s: %v (%T)\n", key, value, value)
-	}
-	fmt.Println("---------------------------")
-}
-
 // convertMap recursively converts map[interface{}]interface{} to map[string]interface{}.
 // The standard YAML library can unmarshal into the former, but we need the latter for
 // structured access.
@@ -758,7 +743,27 @@ func convertMap(m map[string]interface{}) map[string]interface{} {
 }
 
 // convertSlice recursively converts slices containing maps
-func convertSlice(slice []interface{}) []interface{} {
+func convertSlice(slice []interface{}) interface{} {
+	if len(slice) == 0 {
+		return slice
+	}
+
+	// Check if all elements are strings to convert to []string
+	isAllStrings := true
+	for _, item := range slice {
+		if _, ok := item.(string); !ok {
+			isAllStrings = false
+			break
+		}
+	}
+	if isAllStrings {
+		stringSlice := make([]string, len(slice))
+		for i, item := range slice {
+			stringSlice[i] = item.(string)
+		}
+		return stringSlice
+	}
+
 	result := make([]interface{}, len(slice))
 	for i, v := range slice {
 		switch v2 := v.(type) {

@@ -193,7 +193,22 @@ func AllKeys() []string {
 // Must be called after Parse.
 func Debug() {
 	mustBeParsed()
-	finalConfig.Debug()
+	fmt.Println("--- mflag configuration ---")
+	keys := AllKeys()
+	if len(keys) == 0 {
+		fmt.Println("  (empty)")
+		return
+	}
+	for _, key := range keys {
+		value := finalConfig.Get(key)
+		defaultValue := defaults.Get(key)
+		if defaultValue != nil {
+			fmt.Printf("  %s: %v (%T) (default: %v)\n", key, value, value, defaultValue)
+		} else {
+			fmt.Printf("  %s: %v (%T)\n", key, value, value)
+		}
+	}
+	fmt.Println("---------------------------")
 }
 
 // populateFlagSet dynamically creates flags for all known keys on a given flag set.
