@@ -38,8 +38,9 @@ import (
 func defaults() {
     mflag.SetDefault("debug", true)
     mflag.SetDefault("port", 3000)
-    mflag.SetDefault("host", "localhost")
-    mflag.SetDefault("database.user", "default_user")
+    mflag.SetDefault("database.host", "localhost")
+    mflag.SetDefault("database.port", 5432)
+    mflag.SetDefault("database.name", "myapp")
 }
 
 func main() {
@@ -59,13 +60,11 @@ func main() {
 **configmap.yaml:**
 ```yaml
 port: 3000
-host: "0.0.0.0"
 debug: false
 database:
   host: "localhost"
   port: 5432
   name: "myapp"
-  ssl_mode: "require"
 ```
 
 You can override any config via CLI:
