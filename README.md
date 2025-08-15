@@ -87,25 +87,30 @@ Values are resolved in this order (highest to lowest priority):
 2. **YAML configuration file** - Persistent settings
 3. **Default values in code** - Fallback values
 
-After calling `mflag.Parse()`, you can also retrieve values by key:
+After calling `mflag.Parse()`, you can retrieve values by key:
+
 ```go
 mflag.Parse()
 
 // Get typed values
 port := mflag.GetInt("port")
-host := mflag.GetString("host")
 debug := mflag.GetBool("debug")
+
+// Use dot-notation to access nested values
+host := mflag.GetString("database.host")
+
+// or via map if there are several keys within the map 
+// and they all have string values
+dbKey := mflag.GetStringMapString("database")
+host = dbKey["host"]
 
 // Check if a value was explicitly set
 if mflag.IsSet("port") {
     fmt.Println("Port was explicitly configured")
 }
-
-// Print all flags
-mflag.Debug()
 ```
 
-Check [example](./example/main.go) for a practical example of parsing configs into a struct. You May also want to split `AppConfig` into multiple configs like `DBConfig`, `CacheConfig`, etc.
+Check [example](./example/main.go) for a practical example of parsing configs into a struct. In bigger applications, you may want to split `AppConfig` into multiple configs like `DBConfig`, `CacheConfig`, etc.
 
 ## 🔧 Trade-offs
 
