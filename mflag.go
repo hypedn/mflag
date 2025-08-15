@@ -331,6 +331,15 @@ func ParseWithError() error {
 	return nil
 }
 
+func Reset() {
+	defaults = newManager()
+	config = newManager()
+	finalConfig = newManager()
+	parsed = false
+
+	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+}
+
 // castToInt converts an interface{} to an int, handling common numeric types.
 func castToInt(v interface{}) (int, error) {
 	switch val := v.(type) {

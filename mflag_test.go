@@ -1,7 +1,6 @@
 package mflag
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"reflect"
@@ -278,9 +277,9 @@ not_a_map: "some_string"
 func Example() {
 	defer func(oldArgs []string) {
 		os.Args = oldArgs
-		resetGlobals()
+		Reset()
 	}(os.Args)
-	resetGlobals()
+	Reset()
 
 	os.Args = []string{"cmd", "--host=flag.host", "--debug=false"}
 
@@ -327,24 +326,12 @@ func TestParseErrorHandling(t *testing.T) {
 	}
 }
 
-// resetGlobals resets all package-level state variables and the default flag set.
-// This is the core reset logic, callable from both tests and examples.
-func resetGlobals() {
-	defaults = newManager()
-	config = newManager()
-	finalConfig = newManager()
-	parsed = false
-
-	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
-}
-
 // testReset is a helper for Test* functions. It resets global state and
 // mocks os.Args to prevent the test runner's flags from being parsed.
 // It uses t.Cleanup to restore os.Args automatically.
 func testReset(t *testing.T) {
 	t.Helper()
-	resetGlobals()
-
+	Reset()
 	oldArgs := os.Args
 	os.Args = []string{"test"}
 	t.Cleanup(func() { os.Args = oldArgs })
